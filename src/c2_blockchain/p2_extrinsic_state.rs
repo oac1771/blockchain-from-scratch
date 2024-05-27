@@ -72,10 +72,11 @@ impl Header {
         (0..chain.len()).for_each(|index| {
             let child = &chain[index];
 
-            if child.parent != hash(&parent)
-                || height != child.height - 1
-                || child.state != parent.state + parent.extrinsic
-            {
+            if child.parent != hash(&parent) {
+                result = false
+            } else if height != child.height - 1 {
+                result = false
+            } else if child.state - child.extrinsic != parent.state {
                 result = false
             }
 
@@ -103,13 +104,7 @@ fn build_valid_chain(n: u64) -> Vec<Header> {
         height += 1;
         extrinsic = rng.gen_range(0..=10);
 
-        result.push(Header {
-            parent: hash(&result[i]),
-            height,
-            extrinsic,
-            state: parent.state + parent.extrinsic,
-            consensus_digest: (),
-        });
+        result.push(result[i].child(extrinsic));
         parent = result[i].clone();
     });
 
@@ -128,7 +123,7 @@ fn build_valid_chain(n: u64) -> Vec<Header> {
 /// The exercise is still possible.
 fn build_an_invalid_chain() -> Vec<Header> {
 
-    let mut result = build_valid_chain(10);
+    let mut result = build_valid_chain(4);
     result[2].parent = 1010101;
     result
 
@@ -146,10 +141,8 @@ fn build_an_invalid_chain() -> Vec<Header> {
 ///
 /// Side question: What is the fewest number of headers you could create to achieve this goal.
 fn build_forked_chain() -> (Vec<Header>, Vec<Header>) {
-    todo!("Exercise 6")
 
-    // Exercise 7: After you have completed this task, look at how its test is written below.
-    // There is a critical thinking question for you there.
+    (build_valid_chain(2), build_valid_chain(2))
 }
 
 // To run these tests: `cargo test bc_2`
@@ -256,6 +249,7 @@ fn bc_2_invalid_chain_is_really_invalid() {
     // This test chooses to use the student's own verify function.
     // This should be relatively safe given that we have already tested that function.
     let invalid_chain = build_an_invalid_chain();
+
     assert!(!invalid_chain[0].verify_sub_chain(&invalid_chain[1..]))
 }
 

@@ -56,7 +56,7 @@ impl StateMachine for WeirdSwitchMachine {
                         second_switch: starting_state.second_switch,
                     }
                 }
-            },
+            }
             Toggle::SecondSwitch => TwoSwitches {
                 first_switch: starting_state.first_switch,
                 second_switch: !starting_state.second_switch,

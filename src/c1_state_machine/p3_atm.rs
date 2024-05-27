@@ -58,17 +58,7 @@ impl StateMachine for Atm {
     type Transition = Action;
 
     fn next_state(starting_state: &Self::State, t: &Self::Transition) -> Self::State {
-
-        if starting_state.cash_inside != 0 {
-            match t {
-                Action::SwipeCard(pin_hash) => {
-                    
-                }
-                Action::PressKey(key) => {}
-            }
-        } else {
-            return starting_state.clone()
-        }
+        todo!()
     }
 }
 
